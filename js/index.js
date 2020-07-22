@@ -89,7 +89,6 @@ function renderBookShow(book){
             }
             fetch(`${BOOKSURL}/${book.id}`, bookConfig )
             .then(resp => resp.json)
-            .then(book => )
 
         }
         else{}
