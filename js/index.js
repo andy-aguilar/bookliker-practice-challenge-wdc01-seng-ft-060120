@@ -1,5 +1,9 @@
 const BOOKSURL = "http://localhost:3000/books"
 const USERURL = "http://localhost:3000/users/1"
+const USER = {
+    "id": 1,
+    "username": "pouros"
+} 
 
 document.addEventListener("DOMContentLoaded", function() {
     
@@ -28,13 +32,14 @@ function renderBookLi(book) {
     const bookLi = document.createElement("li")
     bookLi.innerText = book.title
     bookLi.addEventListener("click", (e) => {
-        showDiv.innerHTML = "";
+        
         renderBookShow(book)
     })
     listUl.appendChild(bookLi)
 }
 
 function renderBookShow(book){
+    showDiv.innerHTML = "";
     // Render Image
     const image = document.createElement("img")
     image.src = book.img_url
@@ -75,12 +80,11 @@ function renderBookShow(book){
     }
     
     showDiv.appendChild(button)
-    button.addEventListener("click", (e)=> {
+    button.addEventListener("click", (e) => {
         if (user1){
-            delete book.users[userIndex]
-            console.log(book)
+            book.users.splice(userIndex,1)
             let bookConfig = {
-                method: "PATCH",
+                method: "PUT",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/json"
@@ -88,10 +92,27 @@ function renderBookShow(book){
                 body: JSON.stringify(book)
             }
             fetch(`${BOOKSURL}/${book.id}`, bookConfig )
-            .then(resp => resp.json)
-
+            .then(resp => resp.json())
+            .then(book => { 
+                renderBookShow(book)
+            })
         }
-        else{}
+        else{
+            book.users.push(USER)
+            let bookConfig = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: JSON.stringify(book)
+            }
+            fetch(`${BOOKSURL}/${book.id}`, bookConfig )
+            .then(resp => resp.json())
+            .then(updatedBook => { 
+                renderBookShow(book)
+            })
+        }
     })
 }
 
